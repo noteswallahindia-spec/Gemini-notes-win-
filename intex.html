@@ -6,15 +6,16 @@
   <title>Notes Win</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- PDF.js CDN for in-app PDF rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js';</script>
 </head>
 <body>
 
   <!-- SPLASH SCREEN -->
   <div id="splash-screen" class="splash-screen">
     <div class="splash-logo-container">
-      <svg class="splash-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-      </svg>
+      <svg class="splash-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       <h1 class="splash-title">Notes Win</h1>
     </div>
   </div>
@@ -66,16 +67,11 @@
   <!-- ONBOARDING MODAL -->
   <div id="onboarding-container" class="onboarding-container hidden">
     <div class="onboarding-card">
-      <div class="onboarding-progress">
-        <div class="progress-bar-fill" id="onboarding-progress-bar"></div>
-      </div>
-      
+      <div class="onboarding-progress"><div class="progress-bar-fill" id="onboarding-progress-bar"></div></div>
       <form id="onboarding-form">
-        <!-- Step 1: Personal Details -->
         <div class="onboarding-step active" data-step="1">
           <h3>Personal Details</h3>
           <p class="step-desc">Let's get to know you better</p>
-          
           <div class="avatar-upload-group">
             <div class="avatar-preview" id="avatar-preview">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -83,34 +79,23 @@
             <label for="avatar-input" class="btn btn-secondary btn-sm">Upload Photo</label>
             <input type="file" id="avatar-input" accept="image/*" class="hidden">
           </div>
-
           <div class="form-group">
             <label for="onboarding-name">Full Name *</label>
             <input type="text" id="onboarding-name" required placeholder="e.g. Rahul Sharma">
           </div>
-          
           <button type="button" class="btn btn-primary next-step-btn">Next</button>
         </div>
 
-        <!-- Step 2: Academic Goal -->
         <div class="onboarding-step" data-step="2">
           <h3>Your Target Goal</h3>
           <p class="step-desc">Select your current academic focus</p>
-
           <div class="form-group">
             <label>I am preparing for:</label>
             <div class="radio-selector-group">
-              <label class="radio-card">
-                <input type="radio" name="target_type" value="class" checked>
-                <span>School Class (1–12)</span>
-              </label>
-              <label class="radio-card">
-                <input type="radio" name="target_type" value="competitive">
-                <span>Competitive Exam</span>
-              </label>
+              <label class="radio-card"><input type="radio" name="target_type" value="class" checked><span>School Class</span></label>
+              <label class="radio-card"><input type="radio" name="target_type" value="competitive"><span>Competitive Exam</span></label>
             </div>
           </div>
-
           <div class="form-group" id="class-select-group">
             <label for="target-class">Select Class</label>
             <select id="target-class">
@@ -120,18 +105,14 @@
               <option value="Class 12">Class 12</option>
             </select>
           </div>
-
           <div class="form-group hidden" id="exam-select-group">
             <label for="target-exam">Select Exam</label>
             <select id="target-exam">
               <option value="JEE Main / Advanced">JEE Main / Advanced</option>
               <option value="NEET UG">NEET UG</option>
               <option value="CUET">CUET</option>
-              <option value="UPSC / State PSC">UPSC / State PSC</option>
-              <option value="SSC / Banking">SSC / Banking</option>
             </select>
           </div>
-
           <div class="form-group" id="board-select-group">
             <label for="target-board">Select Board</label>
             <select id="target-board">
@@ -139,40 +120,26 @@
               <option value="ICSE">ICSE</option>
               <option value="Bihar Board (BSEB)">Bihar Board (BSEB)</option>
               <option value="UP Board">UP Board</option>
-              <option value="Other State Board">Other State Board</option>
             </select>
           </div>
-
           <div class="step-btn-group">
             <button type="button" class="btn btn-secondary prev-step-btn">Back</button>
             <button type="button" class="btn btn-primary next-step-btn">Next</button>
           </div>
         </div>
 
-        <!-- Step 3: Medium & Language -->
         <div class="onboarding-step" data-step="3">
           <h3>Language & Medium</h3>
           <p class="step-desc">Personalize your learning experience</p>
-
           <div class="form-group">
-            <label for="study-medium">Medium of Instruction</label>
-            <select id="study-medium">
-              <option value="English">English</option>
-              <option value="Hindi">Hindi</option>
-              <option value="Hinglish">Hinglish</option>
-            </select>
+            <label for="study-medium">Medium</label>
+            <select id="study-medium"><option value="English">English</option><option value="Hindi">Hindi</option></select>
           </div>
-
           <div class="form-group">
-            <label for="pref-language">Preferred Interface Language</label>
-            <select id="pref-language">
-              <option value="English">English</option>
-              <option value="Hindi">Hindi</option>
-            </select>
+            <label for="pref-language">Preferred Language</label>
+            <select id="pref-language"><option value="English">English</option><option value="Hindi">Hindi</option></select>
           </div>
-
           <div id="onboarding-error" class="auth-error hidden"></div>
-
           <div class="step-btn-group">
             <button type="button" class="btn btn-secondary prev-step-btn">Back</button>
             <button type="submit" id="onboarding-submit-btn" class="btn btn-primary">Complete Setup</button>
@@ -184,25 +151,23 @@
 
   <!-- MAIN APP SHELL -->
   <div id="app-shell" class="app-shell hidden">
-    <!-- Header -->
     <header class="top-header">
-      <h1 id="screen-title" class="header-title">Notes Win</h1>
-      <div class="header-actions">
-        <button id="notifications-btn" class="icon-btn" aria-label="Notifications">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="header-left">
+        <button id="back-nav-btn" class="icon-btn hidden" aria-label="Back">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
+        <h1 id="screen-title" class="header-title">Notes Win</h1>
+      </div>
+      <div class="header-actions">
         <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme">
           <svg id="theme-icon" class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         </button>
       </div>
     </header>
 
-    <!-- Main Content Area -->
     <main class="main-content">
-      
-      <!-- SCREEN: HOME -->
+      <!-- HOME SCREEN -->
       <section id="screen-home" class="screen-view active">
-        <!-- Student Greeting Header -->
         <div class="student-profile-banner">
           <div class="student-avatar-container">
             <img id="home-user-avatar" src="" alt="Avatar" class="student-avatar hidden">
@@ -214,13 +179,11 @@
           </div>
         </div>
 
-        <!-- Search Bar Placeholder -->
         <div class="search-placeholder-bar">
           <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input type="text" placeholder="Search Pro Notes, Tests, Chapters..." disabled>
         </div>
 
-        <!-- Quick Access Grid (Responsive auto-fit, not fixed 4-col) -->
         <div class="section-container">
           <h3 class="section-title">Quick Access</h3>
           <div class="quick-access-grid">
@@ -228,118 +191,79 @@
               <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
               <span>Pro Notes</span>
             </button>
-            <button class="quick-card" data-navigate="test">
-              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-              <span>Test</span>
-            </button>
-            <button class="quick-card" data-navigate="challenge">
-              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-              <span>Challenge</span>
-            </button>
-            <button class="quick-card" data-navigate="mock-paper">
-              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/></svg></div>
-              <span>Mock Paper</span>
-            </button>
-            <button class="quick-card" data-navigate="alarm">
-              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg></div>
-              <span>Alarm</span>
-            </button>
-            <button class="quick-card" data-navigate="leaderboard">
-              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
-              <span>Leaderboard</span>
-            </button>
-            <button class="quick-card" data-navigate="certificates">
-              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div>
-              <span>Certificates</span>
-            </button>
-            <button class="quick-card" data-navigate="shop">
-              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
-              <span>Shop</span>
-            </button>
+            <button class="quick-card" data-navigate="test"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span>Test</span></button>
+            <button class="quick-card" data-navigate="challenge"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><span>Challenge</span></button>
+            <button class="quick-card" data-navigate="shop"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div><span>Shop</span></button>
           </div>
         </div>
-
-        <!-- Course Progress Placeholder -->
-        <div class="section-container">
-          <div class="card progress-card-placeholder">
-            <div class="card-header-flex">
-              <h4>Syllabus Progress</h4>
-              <span class="badge">Active Goal</span>
-            </div>
-            <div class="progress-info">
-              <span id="home-progress-target">Class / Goal Progress</span>
-              <span class="progress-pct">0% Completed</span>
-            </div>
-            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 0%;"></div></div>
-          </div>
-        </div>
-
-        <!-- Shop Promo Banner Placeholder -->
-        <div class="section-container">
-          <div class="card promo-card-placeholder">
-            <div class="promo-content">
-              <h4>Upgrade to Pro Advantage</h4>
-              <p>Get unlimited access to verified premium notes & test series.</p>
-            </div>
-            <button class="btn btn-gold btn-sm" data-navigate="shop">Explore Shop</button>
-          </div>
-        </div>
-
-        <!-- Recommended Pro Notes Placeholder -->
-        <div class="section-container">
-          <div class="section-header-flex">
-            <h3 class="section-title">Recommended Pro Notes</h3>
-            <a href="#" class="view-all-link" data-navigate="pro-notes">View All</a>
-          </div>
-          <div class="horizontal-scroll-container">
-            <div class="card item-preview-card skeleton-card">
-              <div class="skeleton-thumb"></div>
-              <div class="skeleton-line"></div>
-              <div class="skeleton-line short"></div>
-            </div>
-            <div class="card item-preview-card skeleton-card">
-              <div class="skeleton-thumb"></div>
-              <div class="skeleton-line"></div>
-              <div class="skeleton-line short"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Upcoming Tests Placeholder -->
-        <div class="section-container">
-          <div class="section-header-flex">
-            <h3 class="section-title">Upcoming Tests</h3>
-            <a href="#" class="view-all-link" data-navigate="test">View All</a>
-          </div>
-          <div class="card list-preview-card skeleton-list">
-            <div class="skeleton-line"></div>
-            <div class="skeleton-line short"></div>
-          </div>
-        </div>
-
-        <!-- Challenge Preview Placeholder -->
-        <div class="section-container">
-          <div class="card challenge-preview-card">
-            <div class="card-header-flex">
-              <h4>Daily Study Challenge</h4>
-              <span class="badge badge-gold">Active</span>
-            </div>
-            <p class="text-sub">Complete daily targets to unlock special rewards.</p>
-          </div>
-        </div>
-
-        <!-- Recent Activity Placeholder -->
-        <div class="section-container">
-          <h3 class="section-title">Recent Activity</h3>
-          <div class="card empty-activity-card">
-            <p class="text-sub">No recent activity yet. Start exploring Pro Notes or Tests!</p>
-          </div>
-        </div>
-
       </section>
 
-      <!-- OTHER PLACEHOLDER SCREENS -->
-      <section id="screen-pro-notes" class="screen-view"><div class="placeholder-card"><h2>Pro Notes Screen</h2></div></section>
+      <!-- PRO NOTES SCREEN (PART 3 Core) -->
+      <section id="screen-pro-notes" class="screen-view">
+        <!-- Search & Filter Bar -->
+        <div class="pn-search-container">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="pn-search-input" placeholder="Search notes by subject or chapter...">
+          </div>
+        </div>
+
+        <!-- Quick Tabs (Subjects | Bookmarks | Recent) -->
+        <div class="pn-nav-tabs">
+          <button class="pn-tab-btn active" data-pn-tab="subjects">Subjects</button>
+          <button class="pn-tab-btn" data-pn-tab="bookmarks">Bookmarks</button>
+          <button class="pn-tab-btn" data-pn-tab="recent">Recently Viewed</button>
+        </div>
+
+        <!-- Dynamic Content Views -->
+        <div id="pn-view-container">
+          <!-- 1. Subjects Grid -->
+          <div id="pn-view-subjects" class="pn-subview active">
+            <div id="pn-subjects-loading" class="skeleton-grid">
+              <div class="card skeleton-card"></div>
+              <div class="card skeleton-card"></div>
+            </div>
+            <div id="pn-subjects-grid" class="subjects-grid hidden"></div>
+          </div>
+
+          <!-- 2. Chapters View -->
+          <div id="pn-view-chapters" class="pn-subview hidden">
+            <div class="subject-header-card" id="pn-active-subject-header"></div>
+            <div id="pn-chapters-loading" class="skeleton-list hidden">
+              <div class="card skeleton-line"></div>
+            </div>
+            <div id="pn-chapters-list" class="chapters-list"></div>
+          </div>
+
+          <!-- 3. Notes & Ebooks Detail View -->
+          <div id="pn-view-notes" class="pn-subview hidden">
+            <div class="chapter-header-card" id="pn-active-chapter-header"></div>
+            <div id="pn-notes-loading" class="skeleton-list hidden">
+              <div class="card skeleton-card"></div>
+            </div>
+            <div id="pn-notes-list" class="notes-content-list"></div>
+          </div>
+
+          <!-- 4. Bookmarks View -->
+          <div id="pn-view-bookmarks" class="pn-subview hidden">
+            <div id="pn-bookmarks-list" class="notes-content-list"></div>
+          </div>
+
+          <!-- 5. Recent View -->
+          <div id="pn-view-recent" class="pn-subview hidden">
+            <div id="pn-recent-list" class="notes-content-list"></div>
+          </div>
+        </div>
+
+        <!-- Global Empty & Offline States -->
+        <div id="pn-empty-state" class="state-container hidden">
+          <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <h4 id="pn-empty-title">No content found</h4>
+          <p id="pn-empty-desc">Check back later for newly added Pro Notes.</p>
+        </div>
+      </section>
+
+      <!-- OTHER PLACEHOLDERS -->
       <section id="screen-test" class="screen-view"><div class="placeholder-card"><h2>Test Screen</h2></div></section>
       <section id="screen-challenge" class="screen-view"><div class="placeholder-card"><h2>Challenge Screen</h2></div></section>
       <section id="screen-shop" class="screen-view"><div class="placeholder-card"><h2>Shop Screen</h2></div></section>
@@ -351,7 +275,42 @@
       </section>
     </main>
 
-    <!-- BOTTOM NAVIGATION (6 TABS) -->
+    <!-- IN-APP PDF VIEWER MODAL -->
+    <div id="pdf-viewer-modal" class="pdf-viewer-modal hidden">
+      <div class="pdf-viewer-header">
+        <button id="close-pdf-btn" class="icon-btn">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="pdf-title-info">
+          <h4 id="pdf-modal-title">Note Title</h4>
+          <span id="pdf-modal-subtitle">Pro Note</span>
+        </div>
+        <div class="pdf-header-actions">
+          <button id="bookmark-pdf-btn" class="icon-btn" title="Bookmark">
+            <svg id="pdf-bookmark-icon" class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </button>
+          <button id="download-pdf-btn" class="icon-btn" title="Download">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <button id="share-pdf-btn" class="icon-btn" title="Share">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="pdf-viewer-body" id="pdf-canvas-container">
+        <canvas id="pdf-render-canvas"></canvas>
+        <div id="pdf-loading-spinner" class="pdf-spinner">Loading PDF...</div>
+      </div>
+
+      <div class="pdf-viewer-footer">
+        <button id="prev-page-btn" class="btn btn-secondary btn-sm">Previous</button>
+        <span id="page-num-display">Page 1 / --</span>
+        <button id="next-page-btn" class="btn btn-secondary btn-sm">Next</button>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
     <nav class="bottom-nav">
       <button class="nav-item active" data-tab="home" data-title="Notes Win">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -388,6 +347,7 @@
   <script src="js/supabase.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/onboarding.js"></script>
+  <script src="js/pronotes.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
