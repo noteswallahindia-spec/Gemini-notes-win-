@@ -30,8 +30,7 @@ function initSessionCheck() {
       if (session) {
         authContainer.classList.add('hidden');
         
-        // Check if Profile & Onboarding is complete
-        const { data: profile, error } = await supabase
+        const { data: profile } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
@@ -58,6 +57,7 @@ function initNavigation() {
   const navItems = document.querySelectorAll('.nav-item');
   const screens = document.querySelectorAll('.screen-view');
   const headerTitle = document.getElementById('screen-title');
+  const backBtn = document.getElementById('back-nav-btn');
 
   function switchTab(targetTab, targetTitle) {
     navItems.forEach((nav) => {
@@ -66,7 +66,16 @@ function initNavigation() {
     screens.forEach((screen) => {
       screen.classList.toggle('active', screen.id === `screen-${targetTab}`);
     });
+    
     if (headerTitle && targetTitle) headerTitle.textContent = targetTitle;
+
+    // Reset back button when switching top-level tabs
+    backBtn?.classList.add('hidden');
+
+    // Trigger Pro Notes initial sub-view load
+    if (targetTab === 'pro-notes' && typeof switchProNotesSubView === 'function') {
+      switchProNotesSubView('subjects');
+    }
   }
 
   navItems.forEach((item) => {
@@ -75,7 +84,6 @@ function initNavigation() {
     });
   });
 
-  // Direct Quick Access Button Routing
   document.addEventListener('click', (e) => {
     const quickCard = e.target.closest('[data-navigate]');
     if (quickCard) {
@@ -83,8 +91,6 @@ function initNavigation() {
       const matchingNavItem = document.querySelector(`.nav-item[data-tab="${tabTarget}"]`);
       if (matchingNavItem) {
         matchingNavItem.click();
-      } else {
-        alert(`${tabTarget.replace('-', ' ').toUpperCase()} feature coming in next parts!`);
       }
     }
   });
