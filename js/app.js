@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Safe PDF.js worker setup
+  if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js';
+  }
+
   initTheme();
   initNavigation();
   initSessionCheck();
@@ -23,13 +28,30 @@ function initSessionCheck() {
   const onboardingContainer = document.getElementById('onboarding-container');
   const appShell = document.getElementById('app-shell');
 
-  supabase.auth.onAuthStateChange(async (event, session) => {
-    setTimeout(async () => {
-      if (splashScreen) splashScreen.style.display = 'none';
+  // Hard timeout fallback to ensure UI displays even if auth listener hangs
+  const splashTimeout = setTimeout(() => {
+    if (splashScreen && splashScreen.style.display !== 'none') {
+      splashScreen.style.display = 'none';
+      if (authContainer && authContainer.classList.contains('hidden') && appShell.classList.contains('hidden')) {
+        authContainer.classList.remove('hidden');
+      }
+    }
+  }, 2500);
 
-      if (session) {
-        authContainer.classList.add('hidden');
-        
+  if (typeof supabase === 'undefined' || !supabase) {
+    if (splashScreen) splashScreen.style.display = 'none';
+    if (authContainer) authContainer.classList.remove('hidden');
+    return;
+  }
+
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    clearTimeout(splashTimeout);
+    if (splashScreen) splashScreen.style.display = 'none';
+
+    if (session) {
+      if (authContainer) authContainer.classList.add('hidden');
+      
+      try {
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
@@ -37,19 +59,21 @@ function initSessionCheck() {
           .single();
 
         if (profile && profile.onboarding_completed) {
-          onboardingContainer.classList.add('hidden');
-          appShell.classList.remove('hidden');
+          if (onboardingContainer) onboardingContainer.classList.add('hidden');
+          if (appShell) appShell.classList.remove('hidden');
           if (typeof loadUserProfile === 'function') loadUserProfile(profile);
         } else {
-          appShell.classList.add('hidden');
-          onboardingContainer.classList.remove('hidden');
+          if (appShell) appShell.classList.add('hidden');
+          if (onboardingContainer) onboardingContainer.classList.remove('hidden');
         }
-      } else {
-        appShell.classList.add('hidden');
-        onboardingContainer.classList.add('hidden');
-        authContainer.classList.remove('hidden');
+      } catch (e) {
+        if (appShell) appShell.classList.remove('hidden');
       }
-    }, 1800);
+    } else {
+      if (appShell) appShell.classList.add('hidden');
+      if (onboardingContainer) onboardingContainer.classList.add('hidden');
+      if (authContainer) authContainer.classList.remove('hidden');
+    }
   });
 }
 
@@ -68,11 +92,8 @@ function initNavigation() {
     });
     
     if (headerTitle && targetTitle) headerTitle.textContent = targetTitle;
-
-    // Reset back button when switching top-level tabs
     backBtn?.classList.add('hidden');
 
-    // Trigger Pro Notes initial sub-view load
     if (targetTab === 'pro-notes' && typeof switchProNotesSubView === 'function') {
       switchProNotesSubView('subjects');
     }
