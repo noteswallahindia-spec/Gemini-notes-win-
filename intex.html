@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Notes Win</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Supabase JS Client library v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -28,7 +27,6 @@
         <p id="auth-subtitle">Log in to continue your preparation</p>
       </div>
 
-      <!-- Auth Form -->
       <form id="auth-form" class="auth-form">
         <div class="form-group">
           <label for="email">Email Address</label>
@@ -65,68 +63,297 @@
     </div>
   </div>
 
+  <!-- ONBOARDING MODAL -->
+  <div id="onboarding-container" class="onboarding-container hidden">
+    <div class="onboarding-card">
+      <div class="onboarding-progress">
+        <div class="progress-bar-fill" id="onboarding-progress-bar"></div>
+      </div>
+      
+      <form id="onboarding-form">
+        <!-- Step 1: Personal Details -->
+        <div class="onboarding-step active" data-step="1">
+          <h3>Personal Details</h3>
+          <p class="step-desc">Let's get to know you better</p>
+          
+          <div class="avatar-upload-group">
+            <div class="avatar-preview" id="avatar-preview">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <label for="avatar-input" class="btn btn-secondary btn-sm">Upload Photo</label>
+            <input type="file" id="avatar-input" accept="image/*" class="hidden">
+          </div>
+
+          <div class="form-group">
+            <label for="onboarding-name">Full Name *</label>
+            <input type="text" id="onboarding-name" required placeholder="e.g. Rahul Sharma">
+          </div>
+          
+          <button type="button" class="btn btn-primary next-step-btn">Next</button>
+        </div>
+
+        <!-- Step 2: Academic Goal -->
+        <div class="onboarding-step" data-step="2">
+          <h3>Your Target Goal</h3>
+          <p class="step-desc">Select your current academic focus</p>
+
+          <div class="form-group">
+            <label>I am preparing for:</label>
+            <div class="radio-selector-group">
+              <label class="radio-card">
+                <input type="radio" name="target_type" value="class" checked>
+                <span>School Class (1–12)</span>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="target_type" value="competitive">
+                <span>Competitive Exam</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group" id="class-select-group">
+            <label for="target-class">Select Class</label>
+            <select id="target-class">
+              <option value="Class 9">Class 9</option>
+              <option value="Class 10" selected>Class 10</option>
+              <option value="Class 11">Class 11</option>
+              <option value="Class 12">Class 12</option>
+            </select>
+          </div>
+
+          <div class="form-group hidden" id="exam-select-group">
+            <label for="target-exam">Select Exam</label>
+            <select id="target-exam">
+              <option value="JEE Main / Advanced">JEE Main / Advanced</option>
+              <option value="NEET UG">NEET UG</option>
+              <option value="CUET">CUET</option>
+              <option value="UPSC / State PSC">UPSC / State PSC</option>
+              <option value="SSC / Banking">SSC / Banking</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="board-select-group">
+            <label for="target-board">Select Board</label>
+            <select id="target-board">
+              <option value="CBSE">CBSE</option>
+              <option value="ICSE">ICSE</option>
+              <option value="Bihar Board (BSEB)">Bihar Board (BSEB)</option>
+              <option value="UP Board">UP Board</option>
+              <option value="Other State Board">Other State Board</option>
+            </select>
+          </div>
+
+          <div class="step-btn-group">
+            <button type="button" class="btn btn-secondary prev-step-btn">Back</button>
+            <button type="button" class="btn btn-primary next-step-btn">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Medium & Language -->
+        <div class="onboarding-step" data-step="3">
+          <h3>Language & Medium</h3>
+          <p class="step-desc">Personalize your learning experience</p>
+
+          <div class="form-group">
+            <label for="study-medium">Medium of Instruction</label>
+            <select id="study-medium">
+              <option value="English">English</option>
+              <option value="Hindi">Hindi</option>
+              <option value="Hinglish">Hinglish</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="pref-language">Preferred Interface Language</label>
+            <select id="pref-language">
+              <option value="English">English</option>
+              <option value="Hindi">Hindi</option>
+            </select>
+          </div>
+
+          <div id="onboarding-error" class="auth-error hidden"></div>
+
+          <div class="step-btn-group">
+            <button type="button" class="btn btn-secondary prev-step-btn">Back</button>
+            <button type="submit" id="onboarding-submit-btn" class="btn btn-primary">Complete Setup</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MAIN APP SHELL -->
   <div id="app-shell" class="app-shell hidden">
     <!-- Header -->
     <header class="top-header">
-      <h1 id="screen-title" class="header-title">Home</h1>
-      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme">
-        <!-- Sun/Moon SVG -->
-        <svg id="theme-icon" class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-      </button>
+      <h1 id="screen-title" class="header-title">Notes Win</h1>
+      <div class="header-actions">
+        <button id="notifications-btn" class="icon-btn" aria-label="Notifications">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme">
+          <svg id="theme-icon" class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+      </div>
     </header>
 
     <!-- Main Content Area -->
     <main class="main-content">
+      
+      <!-- SCREEN: HOME -->
       <section id="screen-home" class="screen-view active">
-        <div class="placeholder-card">
-          <h2>Home Screen</h2>
-          <p>Content will be added in future parts.</p>
+        <!-- Student Greeting Header -->
+        <div class="student-profile-banner">
+          <div class="student-avatar-container">
+            <img id="home-user-avatar" src="" alt="Avatar" class="student-avatar hidden">
+            <div id="home-avatar-placeholder" class="student-avatar-placeholder">NW</div>
+          </div>
+          <div class="student-details">
+            <h2 id="home-user-name">Welcome Student</h2>
+            <p id="home-user-tag" class="student-tag">Loading profile...</p>
+          </div>
         </div>
+
+        <!-- Search Bar Placeholder -->
+        <div class="search-placeholder-bar">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search Pro Notes, Tests, Chapters..." disabled>
+        </div>
+
+        <!-- Quick Access Grid (Responsive auto-fit, not fixed 4-col) -->
+        <div class="section-container">
+          <h3 class="section-title">Quick Access</h3>
+          <div class="quick-access-grid">
+            <button class="quick-card" data-navigate="pro-notes">
+              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+              <span>Pro Notes</span>
+            </button>
+            <button class="quick-card" data-navigate="test">
+              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+              <span>Test</span>
+            </button>
+            <button class="quick-card" data-navigate="challenge">
+              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <span>Challenge</span>
+            </button>
+            <button class="quick-card" data-navigate="mock-paper">
+              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/></svg></div>
+              <span>Mock Paper</span>
+            </button>
+            <button class="quick-card" data-navigate="alarm">
+              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg></div>
+              <span>Alarm</span>
+            </button>
+            <button class="quick-card" data-navigate="leaderboard">
+              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
+              <span>Leaderboard</span>
+            </button>
+            <button class="quick-card" data-navigate="certificates">
+              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div>
+              <span>Certificates</span>
+            </button>
+            <button class="quick-card" data-navigate="shop">
+              <div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
+              <span>Shop</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Course Progress Placeholder -->
+        <div class="section-container">
+          <div class="card progress-card-placeholder">
+            <div class="card-header-flex">
+              <h4>Syllabus Progress</h4>
+              <span class="badge">Active Goal</span>
+            </div>
+            <div class="progress-info">
+              <span id="home-progress-target">Class / Goal Progress</span>
+              <span class="progress-pct">0% Completed</span>
+            </div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 0%;"></div></div>
+          </div>
+        </div>
+
+        <!-- Shop Promo Banner Placeholder -->
+        <div class="section-container">
+          <div class="card promo-card-placeholder">
+            <div class="promo-content">
+              <h4>Upgrade to Pro Advantage</h4>
+              <p>Get unlimited access to verified premium notes & test series.</p>
+            </div>
+            <button class="btn btn-gold btn-sm" data-navigate="shop">Explore Shop</button>
+          </div>
+        </div>
+
+        <!-- Recommended Pro Notes Placeholder -->
+        <div class="section-container">
+          <div class="section-header-flex">
+            <h3 class="section-title">Recommended Pro Notes</h3>
+            <a href="#" class="view-all-link" data-navigate="pro-notes">View All</a>
+          </div>
+          <div class="horizontal-scroll-container">
+            <div class="card item-preview-card skeleton-card">
+              <div class="skeleton-thumb"></div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line short"></div>
+            </div>
+            <div class="card item-preview-card skeleton-card">
+              <div class="skeleton-thumb"></div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line short"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Tests Placeholder -->
+        <div class="section-container">
+          <div class="section-header-flex">
+            <h3 class="section-title">Upcoming Tests</h3>
+            <a href="#" class="view-all-link" data-navigate="test">View All</a>
+          </div>
+          <div class="card list-preview-card skeleton-list">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line short"></div>
+          </div>
+        </div>
+
+        <!-- Challenge Preview Placeholder -->
+        <div class="section-container">
+          <div class="card challenge-preview-card">
+            <div class="card-header-flex">
+              <h4>Daily Study Challenge</h4>
+              <span class="badge badge-gold">Active</span>
+            </div>
+            <p class="text-sub">Complete daily targets to unlock special rewards.</p>
+          </div>
+        </div>
+
+        <!-- Recent Activity Placeholder -->
+        <div class="section-container">
+          <h3 class="section-title">Recent Activity</h3>
+          <div class="card empty-activity-card">
+            <p class="text-sub">No recent activity yet. Start exploring Pro Notes or Tests!</p>
+          </div>
+        </div>
+
       </section>
 
-      <section id="screen-pro-notes" class="screen-view">
-        <div class="placeholder-card">
-          <h2>Pro Notes Screen</h2>
-          <p>Content will be added in future parts.</p>
-        </div>
-      </section>
-
-      <section id="screen-test" class="screen-view">
-        <div class="placeholder-card">
-          <h2>Test Screen</h2>
-          <p>Content will be added in future parts.</p>
-        </div>
-      </section>
-
-      <section id="screen-challenge" class="screen-view">
-        <div class="placeholder-card">
-          <h2>Challenge Screen</h2>
-          <p>Content will be added in future parts.</p>
-        </div>
-      </section>
-
-      <section id="screen-shop" class="screen-view">
-        <div class="placeholder-card">
-          <h2>Shop Screen</h2>
-          <p>Content will be added in future parts.</p>
-        </div>
-      </section>
-
+      <!-- OTHER PLACEHOLDER SCREENS -->
+      <section id="screen-pro-notes" class="screen-view"><div class="placeholder-card"><h2>Pro Notes Screen</h2></div></section>
+      <section id="screen-test" class="screen-view"><div class="placeholder-card"><h2>Test Screen</h2></div></section>
+      <section id="screen-challenge" class="screen-view"><div class="placeholder-card"><h2>Challenge Screen</h2></div></section>
+      <section id="screen-shop" class="screen-view"><div class="placeholder-card"><h2>Shop Screen</h2></div></section>
       <section id="screen-account" class="screen-view">
         <div class="placeholder-card">
           <h2>Account Screen</h2>
-          <p>Content will be added in future parts.</p>
           <button id="logout-btn" class="btn btn-secondary" style="margin-top: 15px;">Logout</button>
         </div>
       </section>
     </main>
 
-    <!-- Bottom Navigation Shell (6 Tabs) -->
+    <!-- BOTTOM NAVIGATION (6 TABS) -->
     <nav class="bottom-nav">
-      <button class="nav-item active" data-tab="home" data-title="Home">
+      <button class="nav-item active" data-tab="home" data-title="Notes Win">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span class="nav-label">Home</span>
       </button>
@@ -137,7 +364,7 @@
       </button>
 
       <button class="nav-item" data-tab="test" data-title="Test">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <span class="nav-label">Test</span>
       </button>
 
@@ -160,6 +387,7 @@
 
   <script src="js/supabase.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/onboarding.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
