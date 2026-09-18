@@ -1,211 +1,98 @@
-// Global mode toggle state
 let isSignUpMode = false;
 
 document.addEventListener('DOMContentLoaded', () => {
-  initAuthForm();
-  initAuthModeToggle();
-  initGoogleAuth();
+  setupAuthEvents();
 });
 
-function initAuthModeToggle() {
+function setupAuthEvents() {
+  const authForm = document.getElementById('auth-form');
   const toggleBtn = document.getElementById('toggle-auth-btn');
-  const authTitle = document.getElementById('auth-title');
-  const authSubtitle = document.getElementById('auth-subtitle');
-  const submitBtn = document.getElementById('auth-submit-btn');
-  const toggleText = document.getElementById('toggle-auth-mode-text');
-  const errorDiv = document.getElementById('auth-error');
-  const successDiv = document.getElementById('auth-success');
 
+  // Switch between Login and Signup
   toggleBtn?.addEventListener('click', (e) => {
     e.preventDefault();
     isSignUpMode = !isSignUpMode;
+    
+    document.getElementById('auth-title').textContent = isSignUpMode ? 'Create an Account' : 'Welcome to Notes Win';
+    document.getElementById('auth-subtitle').textContent = isSignUpMode ? 'Sign up to start your learning journey' : 'Log in to continue your preparation';
+    document.getElementById('auth-submit-btn').textContent = isSignUpMode ? 'Sign Up' : 'Log In';
+    
+    document.getElementById('toggle-auth-mode-text').innerHTML = isSignUpMode 
+      ? 'Already have an account? <a href="#" id="toggle-auth-btn" class="auth-link">Log In</a>'
+      : 'Don\'t have an account? <a href="#" id="toggle-auth-btn" class="auth-link">Sign Up</a>';
 
-    // Clear previous error or success messages
+    // Re-bind click event to toggle link
+    setupAuthEvents();
+  });
+
+  // Handle Form Submission (Sign Up / Login)
+  authForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('email')?.value.trim();
+    const password = document.getElementById('password')?.value;
+    const errorDiv = document.getElementById('auth-error');
+    const submitBtn = document.getElementById('auth-submit-btn');
+
+    // Reset error box
     if (errorDiv) {
       errorDiv.textContent = '';
       errorDiv.classList.add('hidden');
     }
-    if (successDiv) {
-      successDiv.textContent = '';
-      successDiv.classList.add('hidden');
-    }
-
-    if (isSignUpMode) {
-      authTitle.textContent = 'Create an Account';
-      authSubtitle.textContent = 'Sign up to start your learning journey';
-      submitBtn.textContent = 'Sign Up';
-      toggleText.innerHTML = 'Already have an account? <a href="#" id="toggle-auth-btn" class="auth-link">Log In</a>';
-    } else {
-      authTitle.textContent = 'Welcome to Notes Win';
-      authSubtitle.textContent = 'Log in to continue your preparation';
-      submitBtn.textContent = 'Log In';
-      toggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-auth-btn" class="auth-link">Sign Up</a>';
-    }
-
-    // Re-bind click event to newly created dynamic link
-    document.getElementById('toggle-auth-btn')?.addEventListener('click', arguments.callee);
-  });
-}
-
-function initAuthForm() {
-  const authForm = document.getElementById('auth-form');
-  const emailInput = document.getElementById('email');
-  const passwordInput = document.getElementById('password');
-  const errorDiv = document.getElementById('auth-error');
-  const successDiv = document.getElementById('auth-success');
-  const submitBtn = document.getElementById('auth-submit-btn');
-
-  authForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const email = emailInput?.value?.trim();
-    const password = passwordInput?.value;
-
-    // Reset messages
-    showAuthError('');
-    showAuthSuccess('');
 
     if (!email || !password) {
-      showAuthError('Please enter both email and password.');
+      showError('Please enter both Email and Password.');
       return;
     }
 
-    if (password.length < 6) {
-      showAuthError('Password must be at least 6 characters long.');
+    if (!supabase) {
+      showError('Supabase Connection Failed! Check js/supabase.js file credentials.');
       return;
     }
 
-    // Disable button to prevent double submissions
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.textContent = isSignUpMode ? 'Signing Up...' : 'Logging In...';
-    }
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
 
     try {
       if (isSignUpMode) {
-        console.log('🔄 Attempting Supabase Sign Up for:', email);
-
-        const { data, error } = await supabase.auth.signUp({
-          email: email,
-          password: password
-        });
+        // CALL SUPABASE SIGN UP
+        const { data, error } = await supabase.auth.signUp({ email, password });
 
         if (error) {
-          console.error('❌ Supabase Sign Up Error:', error);
-          showAuthError(getFriendlyErrorMessage(error));
-        } else {
-          console.log('✅ Supabase Sign Up Success:', data);
-
-          if (data.user) {
-            // Check if email confirmation is required by Supabase settings
-            if (data.session) {
-              showAuthSuccess('Account created! Navigating to onboarding...');
-              // Auth listener in app.js automatically triggers Onboarding
-            } else {
-              showAuthSuccess('Sign up successful! Please check your email to confirm your account before logging in.');
-            }
-          }
+          showError(error.message);
+        } else if (data?.user) {
+          alert('Sign Up Successful! Redirecting...');
+          
+          // Show Onboarding Screen manually if Auth Listener hasn't fired
+          document.getElementById('auth-container')?.classList.add('hidden');
+          document.getElementById('onboarding-container')?.classList.remove('hidden');
         }
       } else {
-        console.log('🔄 Attempting Supabase Log In for:', email);
-
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
+        // CALL SUPABASE LOGIN
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
         if (error) {
-          console.error('❌ Supabase Log In Error:', error);
-          showAuthError(getFriendlyErrorMessage(error));
+          showError(error.message);
         } else {
-          console.log('✅ Supabase Log In Success:', data);
-          showAuthSuccess('Login successful!');
-          // Auth listener in app.js automatically handles redirection
+          document.getElementById('auth-container')?.classList.add('hidden');
+          document.getElementById('app-shell')?.classList.remove('hidden');
         }
       }
     } catch (err) {
-      console.error('❌ Unexpected Auth Exception:', err);
-      showAuthError('An unexpected connection error occurred. Please try again.');
+      showError('Unexpected Error: ' + err.message);
     } finally {
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = isSignUpMode ? 'Sign Up' : 'Log In';
-      }
+      submitBtn.disabled = false;
+      submitBtn.textContent = isSignUpMode ? 'Sign Up' : 'Log In';
     }
   });
 }
 
-function initGoogleAuth() {
-  const googleBtn = document.getElementById('google-login-btn');
-
-  googleBtn?.addEventListener('click', async () => {
-    try {
-      console.log('🔄 Initiating Google OAuth Login...');
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin
-        }
-      });
-
-      if (error) {
-        console.error('❌ Google OAuth Error:', error);
-        showAuthError(error.message);
-      }
-    } catch (err) {
-      console.error('❌ OAuth Exception:', err);
-      showAuthError('Failed to initiate Google login.');
-    }
-  });
-}
-
-// Helpers
-function showAuthError(message) {
+function showError(msg) {
   const errorDiv = document.getElementById('auth-error');
   if (errorDiv) {
-    if (message) {
-      errorDiv.textContent = message;
-      errorDiv.classList.remove('hidden');
-    } else {
-      errorDiv.textContent = '';
-      errorDiv.classList.add('hidden');
-    }
+    errorDiv.textContent = msg;
+    errorDiv.classList.remove('hidden');
+  } else {
+    alert(msg);
   }
-}
-
-function showAuthSuccess(message) {
-  const successDiv = document.getElementById('auth-success');
-  if (successDiv) {
-    if (message) {
-      successDiv.textContent = message;
-      successDiv.classList.remove('hidden');
-    } else {
-      successDiv.textContent = '';
-      successDiv.classList.add('hidden');
-    }
-  }
-}
-
-function getFriendlyErrorMessage(error) {
-  if (!error) return 'An error occurred.';
-  
-  const msg = error.message.toLowerCase();
-  
-  if (msg.includes('user already registered') || msg.includes('already exists')) {
-    return 'An account with this email already exists. Try logging in instead.';
-  }
-  if (msg.includes('invalid email')) {
-    return 'Please enter a valid email address.';
-  }
-  if (msg.includes('password should be at least')) {
-    return 'Password is too weak. It must be at least 6 characters.';
-  }
-  if (msg.includes('invalid login credentials')) {
-    return 'Incorrect email or password.';
-  }
-  if (msg.includes('email not confirmed')) {
-    return 'Please confirm your email address before logging in.';
-  }
-
-  return error.message || 'Authentication failed. Please check your details.';
 }
