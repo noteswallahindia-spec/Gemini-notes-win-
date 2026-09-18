@@ -5,10 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Notes Win</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- PDF.js CDN for in-app PDF rendering -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
-  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js';</script>
+  
+  <!-- External CDN Dependencies with defer -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js" defer></script>
+  
+  <!-- Application JS Modules with defer -->
+  <script src="js/supabase.js" defer></script>
+  <script src="js/auth.js" defer></script>
+  <script src="js/onboarding.js" defer></script>
+  <script src="js/pronotes.js" defer></script>
+  <script src="js/app.js" defer></script>
 </head>
 <body>
 
@@ -64,7 +71,7 @@
     </div>
   </div>
 
-  <!-- ONBOARDING MODAL -->
+  <!-- ONBOARDING CONTAINER -->
   <div id="onboarding-container" class="onboarding-container hidden">
     <div class="onboarding-card">
       <div class="onboarding-progress"><div class="progress-bar-fill" id="onboarding-progress-bar"></div></div>
@@ -198,9 +205,8 @@
         </div>
       </section>
 
-      <!-- PRO NOTES SCREEN (PART 3 Core) -->
+      <!-- PRO NOTES SCREEN -->
       <section id="screen-pro-notes" class="screen-view">
-        <!-- Search & Filter Bar -->
         <div class="pn-search-container">
           <div class="search-input-wrapper">
             <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -208,16 +214,13 @@
           </div>
         </div>
 
-        <!-- Quick Tabs (Subjects | Bookmarks | Recent) -->
         <div class="pn-nav-tabs">
           <button class="pn-tab-btn active" data-pn-tab="subjects">Subjects</button>
           <button class="pn-tab-btn" data-pn-tab="bookmarks">Bookmarks</button>
           <button class="pn-tab-btn" data-pn-tab="recent">Recently Viewed</button>
         </div>
 
-        <!-- Dynamic Content Views -->
         <div id="pn-view-container">
-          <!-- 1. Subjects Grid -->
           <div id="pn-view-subjects" class="pn-subview active">
             <div id="pn-subjects-loading" class="skeleton-grid">
               <div class="card skeleton-card"></div>
@@ -226,7 +229,6 @@
             <div id="pn-subjects-grid" class="subjects-grid hidden"></div>
           </div>
 
-          <!-- 2. Chapters View -->
           <div id="pn-view-chapters" class="pn-subview hidden">
             <div class="subject-header-card" id="pn-active-subject-header"></div>
             <div id="pn-chapters-loading" class="skeleton-list hidden">
@@ -235,7 +237,6 @@
             <div id="pn-chapters-list" class="chapters-list"></div>
           </div>
 
-          <!-- 3. Notes & Ebooks Detail View -->
           <div id="pn-view-notes" class="pn-subview hidden">
             <div class="chapter-header-card" id="pn-active-chapter-header"></div>
             <div id="pn-notes-loading" class="skeleton-list hidden">
@@ -244,18 +245,15 @@
             <div id="pn-notes-list" class="notes-content-list"></div>
           </div>
 
-          <!-- 4. Bookmarks View -->
           <div id="pn-view-bookmarks" class="pn-subview hidden">
             <div id="pn-bookmarks-list" class="notes-content-list"></div>
           </div>
 
-          <!-- 5. Recent View -->
           <div id="pn-view-recent" class="pn-subview hidden">
             <div id="pn-recent-list" class="notes-content-list"></div>
           </div>
         </div>
 
-        <!-- Global Empty & Offline States -->
         <div id="pn-empty-state" class="state-container hidden">
           <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <h4 id="pn-empty-title">No content found</h4>
@@ -344,10 +342,5 @@
     </nav>
   </div>
 
-  <script src="js/supabase.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/onboarding.js"></script>
-  <script src="js/pronotes.js"></script>
-  <script src="js/app.js"></script>
 </body>
 </html>
